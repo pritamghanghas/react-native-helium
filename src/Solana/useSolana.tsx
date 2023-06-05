@@ -282,24 +282,34 @@ const useSolana = ({
       type: 'MOBILE' | 'IOT'
     }): Promise<HotspotMeta | undefined> => {
       try {
+        console.log('console hotspot details')
         if (!hemProgram) return
-
+        
         const mint = type === 'IOT' ? IOT_MINT : MOBILE_MINT
+        console.log('mint: ', mint)
         const subDao = subDaoKey(mint)[0]
+        console.log('subDao: ', subDao)
 
         const configKey = rewardableEntityConfigKey(subDao, type)
+        console.log('configKey: ', configKey)
 
         const entityConfig =
           await hemProgram.account.rewardableEntityConfigV0.fetchNullable(
             configKey[0]
           )
         if (!entityConfig) return
+        console.log('entityConfig: ', entityConfig)
 
         if (type === 'IOT') {
           const [info] = iotInfoKey(configKey[0], address)
+          console.log('info: ', info)
           const iotInfo = await hemProgram.account.iotHotspotInfoV0.fetch(info)
+          console.log('iotInfo: ', iotInfo)
           const asset = await getAsset(rpcEndpoint, iotInfo.asset)
-          return hotspotInfoToDetails(iotInfo, asset)
+          console.log('asset: ', asset)
+          const details = hotspotInfoToDetails(iotInfo, asset);
+          console.log('details: ', details)
+          return details;
         }
 
         const [info] = mobileInfoKey(configKey[0], address)
